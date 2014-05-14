@@ -38,10 +38,10 @@ makeCacheMatrix <- function (x = matrix()) {
     #               if the inverse has not been computed before.
     # Note that these functions are part of the internal implementation and
     # should not called by the user.
-    xInv <- NULL # Initially, there is no cached value
+    xInv <- NULL        # Initially, there is no cached value
     set <- function (y) {
         x <<- y
-        xInv <<- NULL # Need to compute the new inverse
+        xInv <<- NULL   # Need to compute the new inverse
     }
     get <- function () x
     setInv <- function(inverse) xInv <<- inverse
@@ -67,7 +67,7 @@ cacheSolve <- function (x) {
         return(xInv)
     }
     data <- x$get()
-    xInv <- solve(data) # Else compute the value, save and return it
+    xInv <- solve(data)   # Else compute the value, save and return it
     x$setInv(xInv)
     xInv
 }
@@ -160,6 +160,8 @@ RunTests <- function (nTests = 100) {
         # computations, even if I won't here.
         d <- round(runif(1, min = 2, max = 42))
         randMat <- makeCacheMatrix(matrix(runif(d^2), d))
+
+        # Compute the inverse and check if caching works correctly
         invMat <- solve(randMat$get())
         stopifnot(invMat == cacheSolve(randMat))
         stopifnot(invMat == randMat$getInv())
@@ -170,6 +172,9 @@ RunTests <- function (nTests = 100) {
     }
 
     # Test the generic implementation
+    # It's also possible to redefine 'makeCacheMatrix' and 'cacheSolve'
+    # using 'makeCacheObject' and 'cachedApply' and run the above tests
+    # again.
     for (i in 1:nTests) {
         d <- round(runif(1, min = 2, max = 42))
         randMat <- makeCacheObject(matrix(runif(d^2), d))
